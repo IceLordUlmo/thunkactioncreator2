@@ -1,30 +1,40 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
-import { addArticle } from '../../store/articleReducer';
+import { thunkWriteArticle } from '../../store/articleReducer';
 import './ArticleInput.css';
 
-const ArticleInput = () => {
+const ArticleInput = () =>
+{
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [imageUrl, setImageUrl] = useState('');
 
   const dispatch = useDispatch();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) =>
+  {
     e.preventDefault();
     const newArticle = {
-      id: nanoid(),
       title,
       body,
       imageUrl
     };
 
-    dispatch(addArticle(newArticle));
-    reset();
+    const response = await dispatch(thunkWriteArticle(newArticle));
+
+    if (response.ok)
+    {
+      reset();
+    }
+    else
+    {
+      return response;
+    }
   };
 
-  const reset = () => {
+  const reset = () =>
+  {
     setTitle('');
     setImageUrl('');
     setBody('');
